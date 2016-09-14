@@ -3,6 +3,7 @@
 #include <io.h> // _access
 
 static duk_ret_t duk_main(duk_context *ctx);
+static void setup_env(duk_context *ctx);
 
 // -----------------------------------------------------------------------------
 
@@ -14,6 +15,9 @@ int main(int argc, char const *argv[])
 		printf("%s: could not allocate Duktape heap\n", argv[0]);
 		return -1;
 	}
+
+	// setup script host environment
+	setup_env(ctx);
 
 	// call the main function
 	duk_push_c_function(ctx, duk_main, 2);
@@ -76,4 +80,14 @@ static duk_ret_t duk_main(duk_context *ctx)
 }
 
 // -----------------------------------------------------------------------------
+duk_ret_t dukopen_encodings(duk_context *ctx);
 
+static void setup_env(duk_context *ctx)
+{
+	// register encodings module (as global)
+	duk_push_c_function(ctx, dukopen_encodings, 0);
+	duk_call(ctx, 0);
+	duk_put_global_string(ctx, "encodings");
+}
+
+// -----------------------------------------------------------------------------
