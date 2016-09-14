@@ -84,6 +84,7 @@ static duk_ret_t duk_main(duk_context *ctx)
 
 // -----------------------------------------------------------------------------
 duk_ret_t dukopen_encodings(duk_context *ctx);
+duk_ret_t dukopen_io_file(duk_context *ctx);
 
 
 static duk_ret_t duk_wprint(duk_context *ctx)
@@ -101,6 +102,13 @@ static duk_ret_t duk_wprint(duk_context *ctx)
 	return 0;
 }
 
+static void register_global_module(duk_context *ctx, const char *id, duk_c_function dukopen)
+{
+	duk_push_c_function(ctx, dukopen, 0);
+	duk_call(ctx, 0);
+	duk_put_global_string(ctx, id);
+}
+
 static void setup_env(duk_context *ctx)
 {
 	// register unicode print/alert function
@@ -109,10 +117,9 @@ static void setup_env(duk_context *ctx)
 	duk_push_c_function(ctx, duk_wprint, DUK_VARARGS);
 	duk_put_global_string(ctx, "alert");
 
-	// register encodings module (as global)
-	duk_push_c_function(ctx, dukopen_encodings, 0);
-	duk_call(ctx, 0);
-	duk_put_global_string(ctx, "encodings");
+	// register global modules
+	register_global_module(ctx, "encodings", dukopen_encodings);
+	register_global_module(ctx, "fileio", dukopen_io_file);
 }
 
 // -----------------------------------------------------------------------------

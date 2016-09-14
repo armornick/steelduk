@@ -53,11 +53,12 @@ set(STEELDUK_SRCS
 	${STEELDUK_DIR}/duk-types.cpp
 	${STEELDUK_DIR}/duk-strings.cpp
 	# module sources
-	${STEELDUK_DIR}/encodings.cpp
+	${STEELDUK_DIR}/modules/encodings.cpp
+	${STEELDUK_DIR}/modules/io-file.cpp
 )
 
 add_executable(steelduk ${STEELDUK_SRCS})
-target_include_directories(steelduk PUBLIC ${DUKTAPE_INCLUDE_DIR})
+target_include_directories(steelduk PUBLIC ${DUKTAPE_INCLUDE_DIR} ${STEELDUK_DIR})
 target_link_libraries(steelduk duktape)
 
 #------------------------------------------------------------------------------------

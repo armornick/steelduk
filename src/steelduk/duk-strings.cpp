@@ -27,8 +27,7 @@ const char *wstring_to_ansi(duk_context *ctx, wchar_t *inputs, UINT codepage)
 	char *buff = static_cast<char*>(duk_push_dynamic_buffer(ctx, sizeof(char) * needed));
 	WideCharToMultiByte(codepage, 0, inputs, -1, buff, needed, NULL, NULL);
 	duk_resize_buffer(ctx, -1, lstrlenA(buff));
-	duk_to_string(ctx, -1);
-	return duk_require_string(ctx, -1);
+	return buff;
 }
 
 wchar_t *ansi_to_wstring(duk_context *ctx, const char *inputs, UINT codepage)
