@@ -1,6 +1,9 @@
 #include <duktape.h>
+#include "duk-types.hpp"
 
 #include <io.h> // _access
+#include <stdio.h> // wprintf
+#include <windows.h> // GetStdHandle, WriteConsoleW
 
 static duk_ret_t duk_main(duk_context *ctx);
 static void setup_env(duk_context *ctx);
@@ -82,8 +85,30 @@ static duk_ret_t duk_main(duk_context *ctx)
 // -----------------------------------------------------------------------------
 duk_ret_t dukopen_encodings(duk_context *ctx);
 
+
+static duk_ret_t duk_wprint(duk_context *ctx)
+{
+	HANDLE StdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	int count = duk_get_top(ctx);
+	for (int i = 0; i < count; i++)
+	{
+		wchar_t *textW = utf8_to_wstring(ctx, duk_is_string(ctx, i) ? duk_get_string(ctx, i) : duk_to_string(ctx, i));
+		WriteConsoleW(StdOut, textW, lstrlenW(textW), NULL, NULL);
+	}
+
+	wprintf(L"\n");
+	return 0;
+}
+
 static void setup_env(duk_context *ctx)
 {
+	// register unicode print/alert function
+	duk_push_c_function(ctx, duk_wprint, DUK_VARARGS);
+	duk_put_global_string(ctx, "print");
+	duk_push_c_function(ctx, duk_wprint, DUK_VARARGS);
+	duk_put_global_string(ctx, "alert");
+
 	// register encodings module (as global)
 	duk_push_c_function(ctx, dukopen_encodings, 0);
 	duk_call(ctx, 0);
