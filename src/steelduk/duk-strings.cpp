@@ -1,4 +1,4 @@
-#include "duk-types.hpp"
+#include "duk-helpers.hpp"
 
 /* ----------------------------------------------------------------------------------
 Duktape string conversion helpers

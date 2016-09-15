@@ -1,5 +1,5 @@
-#ifndef _DUK_TYPES_HPP_
-#define _DUK_TYPES_HPP_
+#ifndef _DUK_HELPERS_HPP_
+#define _DUK_HELPERS_HPP_
 
 #include <duktape.h>
 #include <windows.h>
@@ -67,4 +67,4 @@ void sduk_put_prop(duk_context *ctx, duk_idx_t index, const char *prop, T& value
 
 
 
-#endif // _DUK_TYPES_HPP_
+#endif // _DUK_HELPERS_HPP_

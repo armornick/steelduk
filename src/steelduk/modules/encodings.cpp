@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include <duktape.h>
-#include <duk-types.hpp>
+#include <duk-helpers.hpp>
 
 /* ----------------------------------------------------------------------------------
 Module function implementations

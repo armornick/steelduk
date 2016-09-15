@@ -1,4 +1,4 @@
-#include "duk-types.hpp"
+#include "duk-helpers.hpp"
 
 /* ----------------------------------------------------------------------------------
 Duktape type helpers: get value of type (without error)

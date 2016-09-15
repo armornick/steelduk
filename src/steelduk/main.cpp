@@ -1,5 +1,5 @@
 #include <duktape.h>
-#include "duk-types.hpp"
+#include "duk-helpers.hpp"
 
 #include <io.h> // _access
 #include <stdio.h> // wprintf
