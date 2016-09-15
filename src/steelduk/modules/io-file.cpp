@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <io.h>
 #include <errno.h>
 
 #include <duktape.h>
@@ -101,6 +102,28 @@ error:
 	return 0;
 }
 
+static duk_ret_t exists(duk_context *ctx)
+{
+	wchar_t *path; sduk_require(ctx, 0, path);
+
+	int ret = _waccess(path, 00);
+	if (ret == -1)
+	{
+		if (errno == ENOENT)
+		{
+			duk_push_false(ctx);
+			return 1;
+		}
+		else
+		{
+			duk_error(ctx, DUK_ERR_INTERNAL_ERROR, "%s (%d)", strerror(errno), errno);
+		}
+	}
+
+	duk_push_true(ctx);
+	return 1;
+}
+
 /* ----------------------------------------------------------------------------------
 Module declaration
 ---------------------------------------------------------------------------------- */
@@ -108,6 +131,7 @@ static const duk_function_list_entry _module_functions[] = {
 	{ "writeFile", write_file, 2 },
 	{ "appendFile", append_file, 2 },
 	{ "readFile", read_file, 1 },
+	{ "exists", exists, 1 },
 	{ NULL, NULL, 0 }
 };
 
