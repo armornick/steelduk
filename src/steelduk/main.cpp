@@ -85,7 +85,8 @@ static duk_ret_t duk_main(duk_context *ctx)
 // -----------------------------------------------------------------------------
 duk_ret_t dukopen_encodings(duk_context *ctx);
 duk_ret_t dukopen_io_file(duk_context *ctx);
-
+duk_ret_t dukopen_console(duk_context *ctx);
+duk_ret_t dukopen_console_color(duk_context *ctx);
 
 static duk_ret_t duk_wprint(duk_context *ctx)
 {
@@ -120,6 +121,8 @@ static void setup_env(duk_context *ctx)
 	// register global modules
 	register_global_module(ctx, "encodings", dukopen_encodings);
 	register_global_module(ctx, "fileio", dukopen_io_file);
+	register_global_module(ctx, "console", dukopen_console);
+	register_global_module(ctx, "ConsoleColor", dukopen_console_color);
 }
 
 // -----------------------------------------------------------------------------

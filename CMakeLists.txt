@@ -52,9 +52,12 @@ set(STEELDUK_SRCS
 	# Duktape helper functions
 	${STEELDUK_DIR}/duk-types.cpp
 	${STEELDUK_DIR}/duk-strings.cpp
+	${STEELDUK_DIR}/duk-objects.cpp
 	# module sources
 	${STEELDUK_DIR}/modules/encodings.cpp
 	${STEELDUK_DIR}/modules/io-file.cpp
+	${STEELDUK_DIR}/modules/console.cpp
+	${STEELDUK_DIR}/modules/console-color.cpp
 )
 
 add_executable(steelduk ${STEELDUK_SRCS})
