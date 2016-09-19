@@ -83,10 +83,7 @@ static duk_ret_t duk_main(duk_context *ctx)
 }
 
 // -----------------------------------------------------------------------------
-duk_ret_t dukopen_encodings(duk_context *ctx);
-duk_ret_t dukopen_io_file(duk_context *ctx);
-duk_ret_t dukopen_console(duk_context *ctx);
-duk_ret_t dukopen_console_color(duk_context *ctx);
+// Unicode-enabled print/alert function
 
 static duk_ret_t duk_wprint(duk_context *ctx)
 {
@@ -103,12 +100,24 @@ static duk_ret_t duk_wprint(duk_context *ctx)
 	return 0;
 }
 
-static void register_global_module(duk_context *ctx, const char *id, duk_c_function dukopen)
-{
-	duk_push_c_function(ctx, dukopen, 0);
-	duk_call(ctx, 0);
-	duk_put_global_string(ctx, id);
-}
+// -----------------------------------------------------------------------------
+duk_ret_t dukopen_encodings(duk_context *ctx);
+duk_ret_t dukopen_io_file(duk_context *ctx);
+duk_ret_t dukopen_console(duk_context *ctx);
+duk_ret_t dukopen_console_color(duk_context *ctx);
+
+void sduk_setup_modsearch(duk_context *ctx);
+
+
+static const duk_function_list_entry _modules[] = {
+	{ "encodings", dukopen_encodings, 0 },
+	{ "io/file", dukopen_io_file, 0 },
+	{ "console", dukopen_console, 0 },
+	{ "console/color", dukopen_console_color, 0 },
+	{ NULL, NULL, 0 }
+};
+
+#define STEELDUK_PRELOAD_TABLE "\xFF""preload"
 
 static void setup_env(duk_context *ctx)
 {
@@ -118,11 +127,13 @@ static void setup_env(duk_context *ctx)
 	duk_push_c_function(ctx, duk_wprint, DUK_VARARGS);
 	duk_put_global_string(ctx, "alert");
 
-	// register global modules
-	register_global_module(ctx, "encodings", dukopen_encodings);
-	register_global_module(ctx, "fileio", dukopen_io_file);
-	register_global_module(ctx, "console", dukopen_console);
-	register_global_module(ctx, "ConsoleColor", dukopen_console_color);
+	// setup require function
+	sduk_setup_modsearch(ctx);
+
+	// register preloaded modules
+	duk_get_global_string(ctx, STEELDUK_PRELOAD_TABLE);
+	duk_put_function_list(ctx, -1, _modules);
+	duk_pop(ctx);
 }
 
 // -----------------------------------------------------------------------------

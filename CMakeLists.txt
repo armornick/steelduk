@@ -49,6 +49,7 @@ set(STEELDUK_DIR src/steelduk)
 
 set(STEELDUK_SRCS
 	${STEELDUK_DIR}/main.cpp
+	${STEELDUK_DIR}/modsearch.cpp
 	# Duktape helper functions
 	${STEELDUK_DIR}/duk-types.cpp
 	${STEELDUK_DIR}/duk-strings.cpp
