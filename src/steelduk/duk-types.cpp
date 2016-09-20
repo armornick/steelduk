@@ -29,6 +29,19 @@ bool sduk_get(duk_context *ctx, duk_idx_t index, duk_int_t& v)
 	return result;
 }
 
+bool sduk_get(duk_context *ctx, duk_idx_t index, long& v)
+{
+	bool result = false;
+
+	if (duk_is_number(ctx, index))
+	{
+		result = true;
+		v = static_cast<long>(duk_get_int(ctx, index));
+	}
+
+	return result;
+}
+
 bool sduk_get(duk_context *ctx, duk_idx_t index, duk_double_t& v)
 {
 	bool result = false;
@@ -96,6 +109,11 @@ void sduk_require(duk_context *ctx, duk_idx_t index, duk_int_t& v)
 	v = duk_require_int(ctx, index);
 }
 
+void sduk_require(duk_context *ctx, duk_idx_t index, long& v)
+{
+	v = static_cast<long>(duk_require_int(ctx, index));
+}
+
 void sduk_require(duk_context *ctx, duk_idx_t index, duk_double_t& v)
 {
 	v = duk_require_number(ctx, index);
@@ -129,6 +147,11 @@ void sduk_push(duk_context *ctx, bool v)
 void sduk_push(duk_context *ctx, duk_int_t v)
 {
 	duk_push_int(ctx, v);
+}
+
+void sduk_push(duk_context *ctx, long v)
+{
+	duk_push_int(ctx, static_cast<duk_int_t>(v));
 }
 
 void sduk_push(duk_context *ctx, duk_double_t v)

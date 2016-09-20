@@ -6,6 +6,7 @@
 #include <duk-objects.hpp>
 
 #define SDUK_FILESTREAM_PROTOTYPE "\xFF""steelduk::FileStream"
+#define SDUK_FILESTREAM_SEEK "\xFF""steelduk::FileStream::SEEK"
 
 /* ----------------------------------------------------------------------------------
 FileStream method implementations
@@ -144,6 +145,52 @@ static duk_ret_t filestream_rewind(duk_context *ctx)
 	return 0;
 }
 
+static duk_ret_t filestream_tell(duk_context *ctx)
+{
+	FILE *file = check_valid_file(ctx);
+	long offset = ftell(file);
+	sduk_push(ctx, offset);
+	return 1;
+}
+
+static int get_seek_option(duk_context *ctx)
+{
+	if (duk_is_null_or_undefined(ctx, 1))
+	{
+		return SEEK_SET;
+	}
+	else
+	{
+		int result = 0;
+
+		duk_get_global_string(ctx, SDUK_FILESTREAM_SEEK);
+		duk_dup(ctx, 1);
+		if (duk_get_prop(ctx, -2))
+		{
+			sduk_require(ctx, -1, result);
+		}
+		else
+		{
+			duk_error(ctx, DUK_ERR_TYPE_ERROR, "invalid seek mode: %s", duk_to_string(ctx, 1));
+		}
+		duk_pop_2(ctx);
+
+		return result;
+	}
+}
+
+static duk_ret_t filestream_seek(duk_context *ctx)
+{
+	FILE *file = check_valid_file(ctx);
+	long offset; sduk_require(ctx, 0, offset);
+	int origin = get_seek_option(ctx);
+
+	int ret = fseek(file, offset, origin);
+
+	sduk_push(ctx, ret == 0);
+	return 1;
+}
+
 /* ----------------------------------------------------------------------------------
 FileStream prototype declaration
 ---------------------------------------------------------------------------------- */
@@ -154,16 +201,35 @@ static const duk_function_list_entry _prototype[] = {
 	{ "write", filestream_write, 1 },
 	{ "flush", filestream_flush, 0 },
 	{ "rewind", filestream_rewind, 0 },
+	{ "tell", filestream_tell, 0 },
+	{ "seek", filestream_seek, 2 },
 	{ NULL, NULL, 0 }
+};
+
+static const duk_number_list_entry _module_consts[] = {
+	// generic options
+	{ "begin", (double) SEEK_SET },
+	{ "current", (double) SEEK_CUR },
+	{ "end", (double) SEEK_END },
+	// stdio-specific options
+	{ "SEEK_SET", (double) SEEK_SET },
+	{ "SEEK_CUR", (double) SEEK_CUR },
+	{ "SEEK_END", (double) SEEK_END },
+	{ NULL, 0.0 }
 };
 
 static void register_filestream_prototype(duk_context *ctx)
 {
+	// register protoype
 	duk_push_object(ctx);
 	duk_put_function_list(ctx, -1, _prototype);
 	duk_push_c_function(ctx, filestream_finalizer, 1);
 	duk_set_finalizer(ctx, -2);
 	duk_put_global_string(ctx, SDUK_FILESTREAM_PROTOTYPE);
+	// build seek option map
+	duk_push_object(ctx);
+	duk_put_number_list(ctx, -1, _module_consts);
+	duk_put_global_string(ctx, SDUK_FILESTREAM_SEEK);
 }
 
 /* ----------------------------------------------------------------------------------
