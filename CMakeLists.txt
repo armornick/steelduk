@@ -19,6 +19,7 @@ endif()
 #------------------------------------------------------------------------------------
 
 option(DYNAMIC_DUKTAPE "build Duktape as a shared library" OFF)
+option(VERBOSE "log finalizers to stdout" ON)
 
 #------------------------------------------------------------------------------------
 
@@ -43,6 +44,10 @@ else()
 
 endif()
 
+if (VERBOSE)
+	add_definitions(-DSDUK_VERBOSE)
+endif()
+
 #------------------------------------------------------------------------------------
 
 set(STEELDUK_DIR src/steelduk)
@@ -57,6 +62,7 @@ set(STEELDUK_SRCS
 	# module sources
 	${STEELDUK_DIR}/modules/encodings.cpp
 	${STEELDUK_DIR}/modules/io-file.cpp
+	${STEELDUK_DIR}/modules/io-fstream.cpp
 	${STEELDUK_DIR}/modules/console.cpp
 	${STEELDUK_DIR}/modules/console-color.cpp
 )

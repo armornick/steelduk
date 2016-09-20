@@ -103,6 +103,7 @@ static duk_ret_t duk_wprint(duk_context *ctx)
 // -----------------------------------------------------------------------------
 duk_ret_t dukopen_encodings(duk_context *ctx);
 duk_ret_t dukopen_io_file(duk_context *ctx);
+duk_ret_t dukopen_io_fstream(duk_context *ctx);
 duk_ret_t dukopen_console(duk_context *ctx);
 duk_ret_t dukopen_console_color(duk_context *ctx);
 
@@ -112,6 +113,7 @@ void sduk_setup_modsearch(duk_context *ctx);
 static const duk_function_list_entry _modules[] = {
 	{ "encodings", dukopen_encodings, 0 },
 	{ "io/file", dukopen_io_file, 0 },
+	{ "io/fstream", dukopen_io_fstream, 0 },
 	{ "console", dukopen_console, 0 },
 	{ "console/color", dukopen_console_color, 0 },
 	{ NULL, NULL, 0 }
