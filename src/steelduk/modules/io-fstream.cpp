@@ -67,11 +67,8 @@ static duk_ret_t filestream_to_string(duk_context *ctx)
 	const char *path = NULL;
 	
 	duk_push_this(ctx);
-	if (duk_get_prop_string(ctx, -1, "path"))
-	{
-		path = duk_get_string(ctx, -1);
-	}
-	duk_pop_2(ctx);
+	sduk_get_prop(ctx, -1, "path", path);
+	duk_pop(ctx);
 
 	duk_push_sprintf(ctx, "FileStream<%s>", path != NULL ? path : "???");
 	return 1;
@@ -132,6 +129,20 @@ static duk_ret_t filestream_write(duk_context *ctx)
 	return 1;
 }
 
+static duk_ret_t filestream_flush(duk_context *ctx)
+{
+	FILE *file = check_valid_file(ctx);
+	int ret = fflush(file);
+	sduk_push(ctx, ret == 0);
+	return 1;
+}
+
+static duk_ret_t filestream_rewind(duk_context *ctx)
+{
+	FILE *file = check_valid_file(ctx);
+	rewind(file);
+	return 0;
+}
 
 /* ----------------------------------------------------------------------------------
 FileStream prototype declaration
@@ -141,6 +152,8 @@ static const duk_function_list_entry _prototype[] = {
 	{ "toString", filestream_to_string, 0 },
 	{ "read", filestream_read, 1 },
 	{ "write", filestream_write, 1 },
+	{ "flush", filestream_flush, 0 },
+	{ "rewind", filestream_rewind, 0 },
 	{ NULL, NULL, 0 }
 };
 
